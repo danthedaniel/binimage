@@ -12,3 +12,9 @@ Build with cargo: `cargo build`
 ```shell
 binimage <bin_file> <output_image>
 ```
+
+### Example
+
+This is the image produced when `binimage` is ran on its own binary.
+
+![binimage ran on itself](example.png)
