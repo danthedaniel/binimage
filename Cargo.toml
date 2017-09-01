@@ -1,0 +1,12 @@
+[package]
+name = "binimage"
+version = "0.1.0"
+authors = ["teaearlgraycold <supacoofoo@gmail.com>"]
+
+[dependencies]
+image = "*"
+
+[[bin]]
+name = "binimage"
+test = false
+doc = false
