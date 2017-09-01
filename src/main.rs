@@ -50,7 +50,7 @@ fn render_file(bin_file: &String, image_file: &String) {
     let mut buffer: Vec<u8> = Vec::new();
     let size = match file.read_to_end(&mut buffer) {
         Ok(size) => size,
-        Err(why) => panic!("Couldn't read file {}: {}", display, why)
+        Err(why) => panic!("Couldn't read {}: {}", display, why.description())
     };
 
     let dims = image_shape(size);
