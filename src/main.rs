@@ -61,9 +61,6 @@ fn render_file(bin_file: &String, image_file: &String) {
         buffer.push(0);
     }
 
-    println!("Size difference: {}", size_diff);
-    println!("Buffer length: {}\n# of pixels: {}", size, (dims.0 * dims.1));
-
     // Write image
     image::save_buffer(&Path::new(image_file), &buffer, dims.0, dims.1, image::RGB(8)).unwrap();
 }
