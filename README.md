@@ -5,12 +5,18 @@ Create an image from the binary data of a file.
 
 ### Building
 
-Build with cargo: `cargo build`
+Build with cargo: `cargo build --release`
 
-### Usage
+```
+Usage:
+  binimage <input> <output> [--width=<pixels>]
+  binimage <input> <output> [--height=<pixels>]
+  binimage (-h | --help)
 
-```shell
-binimage <bin_file> <output_image>
+Options:
+  -h --help         Show this screen.
+  --width=<pixels>  Specify output image width (default is sqrt of the file size).
+  --height=<pixels>
 ```
 
 ### Example

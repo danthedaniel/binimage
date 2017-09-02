@@ -17,7 +17,6 @@ Create an image from the binary data of a file.
 Usage:
   binimage <input> <output> [--width=<pixels>]
   binimage <input> <output> [--height=<pixels>]
-  binimage --version
   binimage (-h | --help)
 
 Options:
