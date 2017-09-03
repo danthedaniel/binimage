@@ -9,18 +9,25 @@ Build with cargo: `cargo build --release`
 
 ```
 Usage:
-  binimage <input> <output> [--width=<pixels>]
-  binimage <input> <output> [--height=<pixels>]
+  binimage <input> <output> [--width=<pixels>] [--bitdepth=<bits>]
+  binimage <input> <output> [--height=<pixels>] [--bitdepth=<bits>]
   binimage (-h | --help)
 
 Options:
-  -h --help         Show this screen.
-  --width=<pixels>  Specify output image width (default is sqrt of the file size).
-  --height=<pixels>
+  -h --help          Show this screen.
+  --width=<pixels>   Specify output image width. Default is sqrt of the file size.
+  --height=<pixels>  Specify output image height. Default is sqrt of the file size.
+  --bitdepth=<bits>  Number of bits per pixel. Default is 24. Less than 12 is grayscale.
+                     Valid values: 1, 2, 4, 8, 12, 24
 ```
 
-### Example
+### Examples
+
+Running `binimage` on an Atari ROM produces interesting results. This is a
+cropped output image.
+
+![binimage ran on MarioBros](examples/mario_bros.png)
 
 This is the image produced when `binimage` is ran on its own binary.
 
-![binimage ran on itself](example.png)
+![binimage ran on itself](examples/binimage.png)
