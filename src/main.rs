@@ -12,7 +12,6 @@ use std::path::Path;
 use docopt::Docopt;
 use color::ColorType;
 
-const BITS_PER_BYTE: f32 = 8.0;
 const USAGE: &'static str = "
 binimage
 Create an image from the binary data of a file.
@@ -53,27 +52,32 @@ fn main() {
     }
 }
 
+// Round up an integer division
+fn int_ceil(numerator: u32, denominator: u32) -> u32 {
+    let remainder = denominator - numerator % denominator;
+    return (numerator + remainder) / denominator;
+}
+
 // The shape to give an image given a file size and specified parameters
 fn image_shape(buffer_size: usize, arg_shape: (u32, u32), colortype: ColorType) -> Result<(u32, u32), &'static str> {
-    let bit_depth = colortype.bits_per_pixel();
-    let num_pixels = ((buffer_size as f32) * BITS_PER_BYTE / bit_depth as f32).ceil();
+    let num_pixels = (buffer_size as f32 / colortype.bytes_per_pixel()).ceil() as u32;
 
-    if arg_shape.0 > num_pixels as u32 || arg_shape.1 > num_pixels as u32 {
+    if arg_shape.0 > num_pixels || arg_shape.1 > num_pixels {
         return Err("Height or width is too large.");
     }
 
     match arg_shape {
         (0, 0) => {
-            let width = num_pixels.sqrt() as u32;
-            let height = (num_pixels / (width as f32)).ceil() as u32;
+            let width = (num_pixels as f32).sqrt() as u32;
+            let height = int_ceil(num_pixels, width);
             Ok((width, height))
         },
         (x, 0) => {
-            let height = (num_pixels / (x as f32)).ceil() as u32;
+            let height = int_ceil(num_pixels, x);
             Ok((x, height))
         },
         (0, y) => {
-            let width = (num_pixels / (y as f32)).ceil() as u32;
+            let width = int_ceil(num_pixels, y);
             Ok((width, y))
         },
         _ => Err("Height and width can not both be provided.")
@@ -84,7 +88,7 @@ fn image_shape(buffer_size: usize, arg_shape: (u32, u32), colortype: ColorType) 
 fn bytes_to_add(buffer_size: usize, dims: (u32, u32), colortype: ColorType) -> u32 {
     let bit_depth = colortype.bits_per_pixel();
     let bits_required = dims.0 * dims.1 * bit_depth;
-    let bytes_required = (bits_required as f32 / BITS_PER_BYTE).ceil() as u32;
+    let bytes_required = int_ceil(bits_required, 8); // Round up a byte if necessary
 
     return bytes_required - buffer_size as u32;
 }

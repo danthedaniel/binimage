@@ -23,14 +23,18 @@ impl ColorType {
     pub fn to_image_colortype(&self) -> image::ColorType {
         match self {
             &ColorType::Gray(n) => image::Gray(n),
-            &ColorType::RGB(n) => image::RGB(n)
+            &ColorType::RGB(n)  => image::RGB(n)
         }
     }
 
     pub fn bits_per_pixel(&self) -> u32 {
         match self {
             &ColorType::Gray(n) => n as u32,
-            &ColorType::RGB(n) => 3 * n as u32,
+            &ColorType::RGB(n)  => n as u32 * 3,
         }
+    }
+
+    pub fn bytes_per_pixel(&self) -> f32 {
+        self.bits_per_pixel() as f32 / 8.0
     }
 }
