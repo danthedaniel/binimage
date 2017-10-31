@@ -1,5 +1,8 @@
 extern crate image;
 
+/// Rather than using the image crate's ColorType, a more restricted ColorType
+/// is defined containing only grayscale and RGB types. This simplifies match
+/// statements and error handling.
 #[derive(Copy, PartialEq, Eq, Debug, Clone)]
 pub enum ColorType {
     Gray(u8),
@@ -7,6 +10,7 @@ pub enum ColorType {
 }
 
 impl ColorType {
+    /// Create a ColorType from a number of bits per pixel.
     pub fn from_bitdepth(bitdepth: u8) -> Result<ColorType, &'static str> {
         match bitdepth {
             0  => Ok(ColorType::RGB(8)),
@@ -20,6 +24,7 @@ impl ColorType {
         }
     }
 
+    /// Convert to the image crate's ColorType enum.
     pub fn to_image_colortype(&self) -> image::ColorType {
         match self {
             &ColorType::Gray(n) => image::Gray(n),

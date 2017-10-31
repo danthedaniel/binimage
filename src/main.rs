@@ -52,14 +52,25 @@ fn main() {
     }
 }
 
-// Round up an integer division
+/// Round up an integer division.
+///
+/// `numerator` - The upper component of a division
+/// `denominator` - The lower component of a division
 fn int_ceil(numerator: u32, denominator: u32) -> u32 {
     let remainder = denominator - numerator % denominator;
     return (numerator + remainder) / denominator;
 }
 
-// The shape to give an image given a file size and specified parameters
-fn image_shape(buffer_size: usize, arg_shape: (u32, u32), colortype: ColorType) -> Result<(u32, u32), &'static str> {
+/// Determine the dimensions to give to the generated image.
+///
+/// `buffer_size` - The file size
+/// `arg_shape` - The shape specified by the command line arguments
+/// `colortype` - The type of pixel to use
+fn image_shape(
+    buffer_size: usize,
+    arg_shape:   (u32, u32),
+    colortype:   ColorType
+) -> Result<(u32, u32), &'static str> {
     let num_pixels = (buffer_size as f32 / colortype.bytes_per_pixel()).ceil() as u32;
 
     if arg_shape.0 > num_pixels || arg_shape.1 > num_pixels {
@@ -84,15 +95,28 @@ fn image_shape(buffer_size: usize, arg_shape: (u32, u32), colortype: ColorType) 
     }
 }
 
-// The number of additional bytes necessary to match the buffer size and image size (in pixels)
-fn bytes_to_add(buffer_size: usize, dims: (u32, u32), colortype: ColorType) -> u32 {
+/// The number of additional bytes necessary to match the buffer size and image
+/// size (in pixels).
+///
+/// `buffer_size` - The file size
+/// `arg_shape` - The shape of the output image
+/// `colortype` - The type of pixel to use
+fn bytes_to_add(
+    buffer_size: usize,
+    dims:        (u32, u32),
+    colortype:   ColorType
+) -> u32 {
     let bit_depth = colortype.bits_per_pixel();
     let bits_required = dims.0 * dims.1 * bit_depth;
-    let bytes_required = int_ceil(bits_required, 8); // Round up a byte if necessary
+    // Round up a byte if necessary
+    let bytes_required = int_ceil(bits_required, 8);
 
     return bytes_required - buffer_size as u32;
 }
 
+/// Given a set of CLI arguments, generate an image file from an input file.
+///
+/// `args` - The argument struct
 fn render_file(args: Args) -> Result<(), &'static str> {
     let input_path = Path::new(&args.arg_input);
     let output_path = Path::new(&args.arg_output);
@@ -116,7 +140,13 @@ fn render_file(args: Args) -> Result<(), &'static str> {
     }
 
     // Write image
-    image::save_buffer(&output_path, &buffer, dims.0, dims.1, colortype.to_image_colortype()).unwrap();
+    image::save_buffer(
+        &output_path,
+        &buffer,
+        dims.0,
+        dims.1,
+        colortype.to_image_colortype()
+    ).unwrap();
 
     Ok(())
 }
