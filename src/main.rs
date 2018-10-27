@@ -29,7 +29,7 @@ Options:
                      Valid values: 1, 2, 4, 8, 24
 ";
 
-#[derive(Debug, Deserialize)]
+#[derive(Deserialize)]
 struct Args {
     arg_input: String,
     arg_output: Option<String>,
@@ -57,8 +57,7 @@ fn main() {
 /// `numerator` - The upper component of a division
 /// `denominator` - The lower component of a division
 fn int_ceil(numerator: u32, denominator: u32) -> u32 {
-    let remainder = denominator - numerator % denominator;
-    return (numerator + remainder) / denominator;
+    return (numerator + denominator - 1) / denominator;
 }
 
 /// Determine the dimensions to give to the generated image.
