@@ -44,7 +44,7 @@ fn main() {
         unwrap_or_else(|e| e.exit());
 
     match render_file(args) {
-        Ok(_) => std::process::exit(0),
+        Ok(()) => std::process::exit(0),
         Err(e) => {
             eprintln!("Error: {}", e);
             std::process::exit(1)
