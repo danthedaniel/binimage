@@ -13,12 +13,10 @@ impl ColorType {
     /// Create a ColorType from a number of bits per pixel.
     pub fn from_bitdepth(bitdepth: u8) -> Result<ColorType, &'static str> {
         match bitdepth {
-            0  => Ok(ColorType::RGB(8)),
             1  => Ok(ColorType::Gray(1)),
             2  => Ok(ColorType::Gray(2)),
             4  => Ok(ColorType::Gray(4)),
             8  => Ok(ColorType::Gray(8)),
-            12 => Ok(ColorType::RGB(4)),
             24 => Ok(ColorType::RGB(8)),
             _  => Err("Unsupported bitdepth")
         }

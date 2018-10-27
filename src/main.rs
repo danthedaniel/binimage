@@ -7,7 +7,6 @@ mod color;
 
 use std::io::Read;
 use std::fs::File;
-use std::path::Path;
 
 use docopt::Docopt;
 use color::ColorType;
@@ -17,25 +16,26 @@ binimage
 Create an image from the binary data of a file.
 
 Usage:
-  binimage <input> <output> [--width=<pixels>] [--bitdepth=<bits>]
-  binimage <input> <output> [--height=<pixels>] [--bitdepth=<bits>]
+  binimage <input> [output] [--width=<pixels>] [--bitdepth=<bits>]
+  binimage <input> [output] [--height=<pixels>] [--bitdepth=<bits>]
   binimage (-h | --help)
 
 Options:
-  -h --help          Show this screen.
-  --width=<pixels>   Specify output image width. Default is sqrt of the file size.
-  --height=<pixels>  Specify output image height. Default is sqrt of the file size.
-  --bitdepth=<bits>  Number of bits per pixel. Default is 24. Less than 12 is grayscale.
-                     Valid values: 1, 2, 4, 8, 12, 24
+  -h --help          Show this screen
+  output             Default is out.png
+  --width=<pixels>   Specify output image width.
+  --height=<pixels>  Specify output image height.
+  --bitdepth=<bits>  Number of bits per pixel. Default is 24. Less is grayscale
+                     Valid values: 1, 2, 4, 8, 24
 ";
 
 #[derive(Debug, Deserialize)]
 struct Args {
     arg_input: String,
-    arg_output: String,
-    flag_width: u32,
-    flag_height: u32,
-    flag_bitdepth: u8
+    arg_output: Option<String>,
+    flag_width: Option<u32>,
+    flag_height: Option<u32>,
+    flag_bitdepth: Option<u8>
 }
 
 fn main() {
@@ -68,30 +68,29 @@ fn int_ceil(numerator: u32, denominator: u32) -> u32 {
 /// `colortype` - The type of pixel to use
 fn image_shape(
     buffer_size: usize,
-    arg_shape:   (u32, u32),
+    arg_shape:   (Option<u32>, Option<u32>),
     colortype:   ColorType
 ) -> Result<(u32, u32), &'static str> {
     let num_pixels = (buffer_size as f32 / colortype.bytes_per_pixel()).ceil() as u32;
 
-    if arg_shape.0 > num_pixels || arg_shape.1 > num_pixels {
-        return Err("Height or width is too large.");
-    }
+    if arg_shape.0.unwrap_or(0) > num_pixels { Err("Width is too large.")? }
+    if arg_shape.1.unwrap_or(0) > num_pixels { Err("Height is too large.")? }
 
     match arg_shape {
-        (0, 0) => {
+        (None, None) => {
             let width = (num_pixels as f32).sqrt() as u32;
             let height = int_ceil(num_pixels, width);
             Ok((width, height))
         },
-        (x, 0) => {
+        (Some(x), None) => {
             let height = int_ceil(num_pixels, x);
             Ok((x, height))
         },
-        (0, y) => {
+        (None, Some(y)) => {
             let width = int_ceil(num_pixels, y);
             Ok((width, y))
         },
-        _ => Err("Height and width can not both be provided.")
+        _ => unreachable!()
     }
 }
 
@@ -118,18 +117,15 @@ fn bytes_to_add(
 ///
 /// `args` - The argument struct
 fn render_file(args: Args) -> Result<(), &'static str> {
-    let input_path = Path::new(&args.arg_input);
-    let output_path = Path::new(&args.arg_output);
-
     // Read in binary file
-    let mut file = File::open(input_path).
+    let mut file = File::open(&args.arg_input).
         map_err(|_| "Couldn't open input file.")?;
 
     let mut buffer: Vec<u8> = Vec::new();
     let file_size = file.read_to_end(&mut buffer).
         map_err(|_| "Couldn't read input file.")?;
 
-    let colortype = ColorType::from_bitdepth(args.flag_bitdepth)?;
+    let colortype = ColorType::from_bitdepth(args.flag_bitdepth.unwrap_or(24))?;
     let arg_shape = (args.flag_width, args.flag_height);
     let dims = image_shape(file_size, arg_shape, colortype)?;
     let size_diff = bytes_to_add(file_size, dims, colortype);
@@ -141,7 +137,7 @@ fn render_file(args: Args) -> Result<(), &'static str> {
 
     // Write image
     image::save_buffer(
-        &output_path,
+        &args.arg_output.unwrap_or("out.png".to_string()),
         &buffer,
         dims.0,
         dims.1,
