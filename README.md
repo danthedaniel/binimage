@@ -8,17 +8,21 @@ Create an image from the binary data of a file.
 Build with cargo: `cargo build --release`
 
 ```
+binimage
+Create an image from the binary data of a file.
+
 Usage:
-  binimage <input> <output> [--width=<pixels>] [--bitdepth=<bits>]
-  binimage <input> <output> [--height=<pixels>] [--bitdepth=<bits>]
+  binimage <input> [output] [--width=<pixels>] [--bitdepth=<bits>]
+  binimage <input> [output] [--height=<pixels>] [--bitdepth=<bits>]
   binimage (-h | --help)
 
 Options:
-  -h --help          Show this screen.
-  --width=<pixels>   Specify output image width. Default is sqrt of the file size.
-  --height=<pixels>  Specify output image height. Default is sqrt of the file size.
-  --bitdepth=<bits>  Number of bits per pixel. Default is 24. Less than 12 is grayscale.
-                     Valid values: 1, 2, 4, 8, 12, 24
+  -h --help          Show this screen
+  output             Default is out.png
+  --width=<pixels>   Specify output image width.
+  --height=<pixels>  Specify output image height.
+  --bitdepth=<bits>  Number of bits per pixel. Default is 24. Less is grayscale
+                     Valid values: 1, 2, 4, 8, 24
 ```
 
 ### Examples
